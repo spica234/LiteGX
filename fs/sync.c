@@ -3,7 +3,6 @@
  */
 
 #include <linux/kernel.h>
-#include <linux/init.h>
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/slab.h>
@@ -19,33 +18,13 @@
 #include <linux/backing-dev.h>
 #include "internal.h"
 
+#ifdef CONFIG_DYNAMIC_FSYNC
+extern bool early_suspend_active;
+extern bool dyn_fsync_active;
+#endif
+
 #define VALID_FLAGS (SYNC_FILE_RANGE_WAIT_BEFORE|SYNC_FILE_RANGE_WRITE| \
 			SYNC_FILE_RANGE_WAIT_AFTER)
-enum 
-{
-	BOOT_PROGRESSING,
-	BOOT_COMPLETED
-};
-
-static unsigned short int __read_mostly FSync_Verification = BOOT_COMPLETED;
-
-static inline int __init Fsync_Boot_Early_Params(void)
-{
-	static unsigned short int fsynct __initdata = BOOT_PROGRESSING;	
-	FSync_Verification = fsynct;
-	printk("######################################################################################Boot is in progess, turning sync on, setting early paramters#####################################################################################################################################");
-	return(BOOT_COMPLETED);
-}
-early_initcall(Fsync_Boot_Early_Params);
-
-static inline int __init Fsync_Boot_Late_Params(void)
-{
-	static unsigned short int fsynct __initdata = BOOT_PROGRESSING;	
-	FSync_Verification = fsynct;
-	printk("#################################################################################################Boot is in progess, turning sync on, late init call###############################################################################################################");
-	return(FSync_Verification = BOOT_COMPLETED);
-}
-late_initcall(Fsync_Boot_Late_Params);
 
 /*
  * Do the filesystem syncing work. For simple filesystems
@@ -113,7 +92,7 @@ static void sync_one_sb(struct super_block *sb, void *arg)
  * Sync all the data for all the filesystems (called by sys_sync() and
  * emergency sync)
  */
-static void sync_filesystems(int wait)
+void sync_filesystems(int wait)
 {
 	iterate_supers(sync_one_sb, &wait);
 }
@@ -191,6 +170,12 @@ SYSCALL_DEFINE1(syncfs, int, fd)
  */
 int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 {
+#ifdef CONFIG_DYNAMIC_FSYNC
+	if (unlikely(dyn_fsync_active && !early_suspend_active))
+		return 0;
+	else {
+#endif
+
 	struct address_space *mapping = file->f_mapping;
 	int err, ret;
 
@@ -245,20 +230,21 @@ static int do_fsync(unsigned int fd, int datasync)
 
 SYSCALL_DEFINE1(fsync, unsigned int, fd)
 {
-	if(likely(FSync_Verification == BOOT_COMPLETED))
-	{
-		printk("%d Sync is on", FSync_Verification);
+#ifdef CONFIG_DYNAMIC_FSYNC
+	if (unlikely(dyn_fsync_active && !early_suspend_active))
 		return 0;
-	}
 	else
+#endif
 	return do_fsync(fd, 0);
 }
 
 SYSCALL_DEFINE1(fdatasync, unsigned int, fd)
 {
-	if(likely(FSync_Verification == BOOT_COMPLETED))
+#ifdef CONFIG_DYNAMIC_FSYNC
+	if (unlikely(dyn_fsync_active && !early_suspend_active))
 		return 0;
 	else
+#endif
 	return do_fsync(fd, 1);
 }
 
@@ -329,9 +315,12 @@ EXPORT_SYMBOL(generic_write_sync);
 SYSCALL_DEFINE(sync_file_range)(int fd, loff_t offset, loff_t nbytes,
 				unsigned int flags)
 {
-	if(likely(FSync_Verification == BOOT_COMPLETED))
+#ifdef CONFIG_DYNAMIC_FSYNC
+	if (unlikely(dyn_fsync_active && !early_suspend_active))
 		return 0;
 	else {
+#endif
+
 	int ret;
 	struct file *file;
 	struct address_space *mapping;
@@ -411,7 +400,9 @@ out_put:
 	fput_light(file, fput_needed);
 out:
 	return ret;
-}
+#ifdef CONFIG_DYNAMIC_FSYNC
+	}
+#endif
 }
 #ifdef CONFIG_HAVE_SYSCALL_WRAPPERS
 asmlinkage long SyS_sync_file_range(long fd, loff_t offset, loff_t nbytes,
@@ -428,9 +419,11 @@ SYSCALL_ALIAS(sys_sync_file_range, SyS_sync_file_range);
 SYSCALL_DEFINE(sync_file_range2)(int fd, unsigned int flags,
 				 loff_t offset, loff_t nbytes)
 {
-	if(likely(FSync_Verification == BOOT_COMPLETED))
+#ifdef CONFIG_DYNAMIC_FSYNC
+	if (unlikely(dyn_fsync_active && !early_suspend_active))
 		return 0;
 	else
+#endif
 	return sys_sync_file_range(fd, offset, nbytes, flags);
 }
 #ifdef CONFIG_HAVE_SYSCALL_WRAPPERS

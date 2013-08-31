@@ -350,7 +350,7 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  = --strip-debug
-CFLAGS_KERNEL	= -funswitch-loops -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone -fsingle-precision-constant -pipe
+CFLAGS_KERNEL	=
 AFLAGS_KERNEL	=
 CFLAGS_GCOV	= -fprofile-arcs -ftest-coverage
 
@@ -367,13 +367,18 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
+		   -Wno-format-security -Wno-array-bounds \
 		   -fno-delete-null-pointer-checks \
-		   -pipe \
-		   -ffast-math \
-		   -mfpu=neon \
-		   -march=armv7-a \
-		   -mtune=cortex-a9
+		   -mtune=cortex-a9 -marm -march=armv7-a -mcpu=cortex-a9 -fno-pic -mfpu=neon
+		   -mno-unaligned-access -ffast-math -mfpu=vfp3 -funswitch-loops -fpredictive-commoning -fgcse-after-reload \
+		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
+		   -fipa-cp-clone -pipe \
+		   -fgraphite-identity -fsched-spec-load \
+		   -floop-interchange -floop-strip-mine -floop-block \
+		   -fpredictive-commoning -fgcse-after-reload -ftree-vectorize -fipa-cp-clone \
+		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
+		   -ftree-loop-distribution -floop-parallelize-all -ftree-parallelize-loops=4
+
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__

@@ -1,0 +1,6 @@
+# Ignore :
+utsrelease.h
+compile.h
+autoconf.h
+kernel.release
+auto.conf

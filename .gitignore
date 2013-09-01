@@ -1,6 +1,6 @@
 # Ignore :
-utsrelease.h
-compile.h
-autoconf.h
-kernel.release
-auto.conf
+include/generated/utsrelease.h
+include/generated/compile.h
+include/generated/autoconf.h
+include/config/kernel.release
+include/config/auto.conf

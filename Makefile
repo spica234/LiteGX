@@ -370,7 +370,7 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security -Wno-array-bounds \
 		   -fno-delete-null-pointer-checks \
 		   -mtune=cortex-a9 -marm -march=armv7-a -mcpu=cortex-a9 -fno-pic -mfpu=neon
-		   -mno-unaligned-access -ffast-math -mfpu=vfp3 -funswitch-loops -fpredictive-commoning -fgcse-after-reload \
+		   -ffast-math -funswitch-loops -fpredictive-commoning -fgcse-after-reload \
 		   -fmodulo-sched -fmodulo-sched-allow-regmoves \
 		   -fipa-cp-clone -pipe \
 		   -fgraphite-identity -fsched-spec-load \

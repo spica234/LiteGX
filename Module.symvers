@@ -2662,6 +2662,7 @@
 0xcfd8b1a9	shash_attr_alg	vmlinux	EXPORT_SYMBOL_GPL
 0x63eb9355	panic_blink	vmlinux	EXPORT_SYMBOL
 0x7914a8e5	ppp_register_channel	vmlinux	EXPORT_SYMBOL
+0x3f06cf5f	s5p_dsim_set_lcd_freq_change	vmlinux	EXPORT_SYMBOL
 0x6d0e1c83	__sync_dirty_buffer	vmlinux	EXPORT_SYMBOL
 0x6445194f	kmap_high	vmlinux	EXPORT_SYMBOL
 0x9430b46e	cancel_dirty_page	vmlinux	EXPORT_SYMBOL

@@ -603,15 +603,8 @@ config TCP_CONG_CUBIC
 
 config DEFAULT_TCP_CONG
 	string
-	default "bic" if DEFAULT_BIC
-	default "cubic" if DEFAULT_CUBIC
-	default "htcp" if DEFAULT_HTCP
-	default "hybla" if DEFAULT_HYBLA
-	default "vegas" if DEFAULT_VEGAS
 	default "westwood" if DEFAULT_WESTWOOD
-	default "veno" if DEFAULT_VENO
-	default "reno" if DEFAULT_RENO
-	default "cubic"
+	default "westwood"
 
 config TCP_MD5SIG
 	bool "TCP: MD5 Signature Option support (RFC2385) (EXPERIMENTAL)"

@@ -1726,7 +1726,7 @@ monitor_finish:
 		info->prev_charge_virt_state != info->charge_virt_state ||
 		info->prev_battery_soc != info->battery_soc) {
 		/* TBD : timeout value */
-		pr_info("%s: update wakelock(%d)\n", __func__, HZ);
+		pr_info("%s : update wakelock (%d)\n", __func__, HZ);
 		wake_lock_timeout(&info->update_wake_lock, HZ);
 	}
 

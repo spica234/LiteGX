@@ -485,9 +485,8 @@ static ssize_t proximity_enable_store(struct device *dev,
 	
 	#ifdef CONFIG_TOUCH_WAKE
 		if (!new_value) { // Yank555.lu : Proxy disabled, consider proximity not detected
-			proximity_off();
+			proximity_off(); 
 		}
-
 	#endif
 
 	mutex_lock(&cm36651->power_lock);

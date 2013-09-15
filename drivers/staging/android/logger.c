@@ -379,9 +379,9 @@ static void do_write_log(struct logger_log *log, const void *buf, size_t count)
 	// if logger mode is disabled, terminate instantly
 	if (logger_mode == 0)
 	{
-		return;
-	}
-
+			return;
+	} 
+        
 	len = min(count, log->size - log->w_off);
 	memcpy(log->buffer + log->w_off, buf, len);
 
@@ -408,8 +408,8 @@ static ssize_t do_write_log_from_user(struct logger_log *log,
 	// if logger mode is disabled, terminate instantly
 	if (logger_mode == 0)
 	{
-		return 0;
-	}
+			return 0;
+	} 
 
 	len = min(count, log->size - log->w_off);
 	if (len && copy_from_user(log->buffer + log->w_off, buf, len))

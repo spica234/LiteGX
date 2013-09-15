@@ -177,7 +177,7 @@ int vfs_fsync_range(struct file *file, loff_t start, loff_t end, int datasync)
 #endif
 
 	struct address_space *mapping = file->f_mapping;
-	int err, ret; 
+	int err, ret;
 
 	if (!file->f_op || !file->f_op->fsync) {
 		ret = -EINVAL;

@@ -34,8 +34,8 @@ static void stop_drawing_early_suspend(struct early_suspend *h)
 	int ret;
 	unsigned long irq_flags;
 
-/* FIXME: earlysuspend breaks androids CRT-off animation
-* Sleep a little bit to get it played properly */
+	/* FIXME: earlysuspend breaks androids CRT-off animation
+	* Sleep a little bit to get it played properly */
 	msleep(100);
 
 	spin_lock_irqsave(&fb_state_lock, irq_flags);

@@ -1,7 +1,7 @@
 /*
  * Author: andip71, 26.08.2013
  * 
- * Modifications: Yank555.lu 20.08.2013 / AndroidGX 01.09.2013 : removed saturation prevention
+ * Modifications: Yank555.lu 20.08.2013
  *
  * Version 1.6.4
  *
@@ -243,6 +243,34 @@ unsigned int Boeffla_sound_hook_wm8994_write(unsigned int reg, unsigned int val)
 		case WM8994_AIF1_DAC1_FILTERS_1:
 		{
 			newval = get_mono_downmix(val);
+			break;
+		}
+
+		// EQ saturation prevention: dynamic range control 1_1
+		case WM8994_AIF1_DRC1_1:
+		{
+			newval = get_eq_satprevention(1, val);
+			break;
+		}
+
+		// EQ saturation prevention: dynamic range control 1_2
+		case WM8994_AIF1_DRC1_2:
+		{
+			newval = get_eq_satprevention(2, val);
+			break;
+		}
+
+		// EQ saturation prevention: dynamic range control 1_3
+		case WM8994_AIF1_DRC1_3:
+		{
+			newval = get_eq_satprevention(3, val);
+			break;
+		}
+
+		// EQ saturation prevention: dynamic range control 1_4
+		case WM8994_AIF1_DRC1_4:
+		{
+			newval = get_eq_satprevention(4, val);
 			break;
 		}
 
@@ -652,6 +680,7 @@ static void set_eq(void)
 	// refresh settings for gains, bands, saturation prevention and speaker boost
 	set_eq_gains();
 	set_eq_bands();
+	set_eq_satprevention();
 	set_speaker_boost();
 }
 
@@ -831,6 +860,121 @@ static void set_eq_bands()
 				EQ_BAND_5_A_STUNING, EQ_BAND_5_B_STUNING, EQ_BAND_5_PG_STUNING);
 		}
 	}
+}
+
+
+// EQ saturation prevention
+
+static void set_eq_satprevention(void)
+{
+	unsigned int val;
+
+	// read current value for DRC1_1 register, modify value and write back to audio hub
+	val = wm8994_read(codec, WM8994_AIF1_DRC1_1);
+	val = get_eq_satprevention(1, val);
+	wm8994_write(codec, WM8994_AIF1_DRC1_1, val);
+
+	// read current value for DRC1_2 register, modify value and write back to audio hub
+	val = wm8994_read(codec, WM8994_AIF1_DRC1_2);
+	val = get_eq_satprevention(2, val);
+	wm8994_write(codec, WM8994_AIF1_DRC1_2, val);
+
+	// read current value for DRC1_3 register, modify value and write back to audio hub
+	val = wm8994_read(codec, WM8994_AIF1_DRC1_3);
+	val = get_eq_satprevention(3, val);
+	wm8994_write(codec, WM8994_AIF1_DRC1_3, val);
+
+	// read current value for DRC1_4 register, modify value and write back to audio hub
+	val = wm8994_read(codec, WM8994_AIF1_DRC1_4);
+	val = get_eq_satprevention(4, val);
+	wm8994_write(codec, WM8994_AIF1_DRC1_4, val);
+
+	// print debug information
+	if (debug(DEBUG_NORMAL))
+	{
+		// check whether saturation prevention is switched on or off based on
+		// real status of EQ and configured EQ mode and speaker tuning
+		if (is_eq && is_eq_headphone && eq == EQ_NORMAL)
+			printk("Boeffla-sound: set_eq_satprevention to on (headphone)\n");
+		else if (is_eq && !is_eq_headphone && eq == EQ_NORMAL)
+			printk("Boeffla-sound: set_eq_satprevention to on (speaker)\n");
+		else
+			printk("Boeffla-sound: set_eq_satprevention to off\n");
+	}
+}
+
+
+static unsigned int get_eq_satprevention(int reg_index, unsigned int val)
+{
+	// EQ mode is for headphone with saturation prevention and EQ is in fact on
+	if (is_eq && is_eq_headphone && eq == EQ_NORMAL)
+	{
+		switch(reg_index)
+		{
+			case 1:
+				// register WM8994_AIF1_DRC1_1
+				return AIF1_DRC1_1_PREVENT;
+
+			case 2:
+				// register WM8994_AIF1_DRC1_2
+				return AIF1_DRC1_2_PREVENT;
+
+			case 3:
+				// register WM8994_AIF1_DRC1_3
+				return AIF1_DRC1_3_PREVENT;
+
+			case 4:
+				// register WM8994_AIF1_DRC1_4
+				return AIF1_DRC1_4_PREVENT;
+		}
+	}
+
+	// EQ mode is for speaker tuning
+	if (is_eq && !is_eq_headphone)
+	{
+		switch(reg_index)
+		{
+			case 1:
+				// register WM8994_AIF1_DRC1_1
+				return AIF1_DRC1_1_STUNING;
+
+			case 2:
+				// register WM8994_AIF1_DRC1_2
+				return AIF1_DRC1_2_STUNING;
+
+			case 3:
+				// register WM8994_AIF1_DRC1_3
+				return AIF1_DRC1_3_STUNING;
+
+			case 4:
+				// register WM8994_AIF1_DRC1_4
+				return AIF1_DRC1_4_STUNING;
+		}
+	}
+
+	// EQ is in fact off or mode is without saturation prevention
+	// so the default values are loaded (with DRC switched off)
+	switch(reg_index)
+	{
+		case 1:
+			// register WM8994_AIF1_DRC1_1
+			return AIF1_DRC1_1_DEFAULT;
+
+		case 2:
+			// register WM8994_AIF1_DRC1_2
+			return AIF1_DRC1_2_DEFAULT;
+
+		case 3:
+			// register WM8994_AIF1_DRC1_3
+			return AIF1_DRC1_3_DEFAULT;
+
+		case 4:
+			// register WM8994_AIF1_DRC1_4
+			return AIF1_DRC1_4_DEFAULT;
+	}
+
+	// We should in fact never reach this last return, only in case of errors
+	return val;
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * Author: andip71, 26.08.2013
  * 
- * Modifications: Yank555.lu 20.08.2013 / AndroidGX 01.09.2013 : removed saturation prevention
+ * Modifications: Yank555.lu 20.08.2013
  *
  * Version 1.6.4
  *
@@ -101,6 +101,22 @@ unsigned int Boeffla_sound_hook_wm8994_write(unsigned int reg, unsigned int valu
 #define EQ_BAND_5_A_STUNING	0xFC8F
 #define EQ_BAND_5_B_STUNING	0x0400
 #define EQ_BAND_5_PG_STUNING	0x323C
+
+// EQ saturation prevention
+#define AIF1_DRC1_1_DEFAULT	152
+#define AIF1_DRC1_2_DEFAULT	2116
+#define AIF1_DRC1_3_DEFAULT	232
+#define AIF1_DRC1_4_DEFAULT	528
+
+#define AIF1_DRC1_1_PREVENT	132
+#define AIF1_DRC1_2_PREVENT	647
+#define AIF1_DRC1_3_PREVENT	232
+#define AIF1_DRC1_4_PREVENT	528
+
+#define AIF1_DRC1_1_STUNING	152
+#define AIF1_DRC1_2_STUNING	2116
+#define AIF1_DRC1_3_STUNING	16
+#define AIF1_DRC1_4_STUNING	235
 
 // Speaker tuning
 #define SPEAKER_BOOST_DEFAULT	4

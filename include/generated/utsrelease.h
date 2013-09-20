@@ -1,1 +1,1 @@
-#define UTS_RELEASE "3.0.31-LiteGX-v4.3.0"
+#define UTS_RELEASE "3.0.31-LiteGX-v4.3.1"
